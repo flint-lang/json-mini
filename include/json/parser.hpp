@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iterator>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -183,37 +184,44 @@ class JsonParser {
         return std::make_unique<JsonGroup>("__ROOT__", objects);
     }
 
+    /// @function `to_string`
+    /// @brief Converts a given json object to a string
+    ///
+    /// @param `object` The object to convert
+    /// @param `indent_lvl` The indentation level of the recursive string conversion
+    /// @note Calls itself recursively
+    static std::string to_string(const JsonObject *object, int indent_lvl = 0) {
+        std::stringstream ss;
+        if (const auto group = dynamic_cast<const JsonGroup *>(object)) {
+            if (group->name != "__ROOT__") {
+                ss << std::string(indent_lvl, '\t') << "\"" << group->name << "\": ";
+            } else {
+                ss << std::string(indent_lvl, '\t');
+            }
+            ss << "{\n";
+            for (auto it = group->fields.begin(); it != group->fields.end(); ++it) {
+                if (it != group->fields.begin()) {
+                    ss << ",\n";
+                }
+                ss << to_string((*it).get(), indent_lvl + 1);
+                if (it == std::prev(group->fields.end())) {
+                    ss << "\n";
+                }
+            }
+            ss << std::string(indent_lvl, '\t') << "}";
+        } else if (const auto string = dynamic_cast<const JsonString *>(object)) {
+            ss << std::string(indent_lvl, '\t') << "\"" << string->name << "\": " << "\"" << string->value << "\"";
+        } else if (const auto number = dynamic_cast<const JsonNumber *>(object)) {
+            ss << std::string(indent_lvl, '\t') << "\"" << number->name << "\": " << number->number;
+        }
+        return ss.str();
+    }
+
     /// @function `print_json_object`
     /// @brief Prints a given json object to the console
     ///
     /// @param `object` The object to print
-    /// @param `indent_lvl` The indentation level of the recursive printing
-    /// @note Calls itself recursively
-    static void print_json_object(const JsonObject *object, const unsigned int indent_lvl = 0) {
-        if (const auto group = dynamic_cast<const JsonGroup *>(object)) {
-            if (group->name != "__ROOT__") {
-                std::cout << std::string(indent_lvl, '\t') << "\"" << group->name << "\": ";
-            } else {
-                std::cout << std::string(indent_lvl, '\t');
-            }
-            std::cout << "{\n";
-            for (auto it = group->fields.begin(); it != group->fields.end(); ++it) {
-                if (it != group->fields.begin()) {
-                    std::cout << ",\n";
-                }
-                print_json_object((*it).get(), indent_lvl + 1);
-                if (it == std::prev(group->fields.end())) {
-                    std::cout << "\n";
-                }
-            }
-            std::cout << std::string(indent_lvl, '\t') << "}";
-        } else if (const auto string = dynamic_cast<const JsonString *>(object)) {
-            std::cout << std::string(indent_lvl, '\t') << "\"" << string->name << "\": " << "\"" << string->value << "\"";
-        } else if (const auto number = dynamic_cast<const JsonNumber *>(object)) {
-            std::cout << std::string(indent_lvl, '\t') << "\"" << number->name << "\": " << number->number;
-        }
-        if (indent_lvl == 0) {
-            std::cout << std::endl;
-        }
+    static void print_json_object(const JsonObject *object) {
+        std::cout << to_string(object) << std::endl;
     }
 };
