@@ -42,7 +42,7 @@ class JsonLexer {
     ///
     /// @param `file_path` The path the json file to scan is located at
     /// @return `std::vector<JsonToken>` A list of all scanned tokens
-    static std::vector<JsonToken> scan(std::filesystem::path &file_path) {
+    static std::vector<JsonToken> scan(const std::filesystem::path &file_path) {
         // Load the given file
         std::ifstream file(file_path);
         if (!file) {
