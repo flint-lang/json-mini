@@ -1,4 +1,4 @@
--Ijson-mini
+-Iinclude
 -std=c++17
 //-fno-exceptions
 -funwind-tables
