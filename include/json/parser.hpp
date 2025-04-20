@@ -102,7 +102,6 @@ class JsonParser {
     static std::optional<std::unique_ptr<JsonObject>> parse(std::vector<JsonToken> &tokens) {
         std::vector<std::unique_ptr<JsonObject>> objects;
         for (size_t i = 0; i < tokens.size(); i++) {
-            std::cout << "PARSE_" << i << std::endl;
             if (tokens[i].type == JsonTokenType::TOK_LEFT_BRACE) {
                 i++; // Skip the {
                 size_t end_idx = i;
