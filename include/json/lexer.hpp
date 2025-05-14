@@ -44,7 +44,7 @@ class JsonLexer {
     /// @return `std::vector<JsonToken>` A list of all scanned tokens
     static std::vector<JsonToken> scan(const std::filesystem::path &file_path) {
         // Load the given file
-        std::ifstream file(file_path);
+        std::ifstream file(file_path.string());
         if (!file) {
             throw std::runtime_error("Failed to load file " + file_path.string());
         }
