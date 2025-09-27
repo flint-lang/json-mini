@@ -1,3 +1,5 @@
 metadata.json
 .vscode
 testing
+.zig-cache
+zig-out
